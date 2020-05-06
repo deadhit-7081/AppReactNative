@@ -1,64 +1,64 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View ,Button, TextInput,Image,Alert,ScrollView} from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
+import { TextInput,Appbar , Button} from 'react-native-paper';
+import DisplayLove from './components/DisplayLove';
 import axios from 'axios';
 
 
 class App extends Component {
-  state  = 
-  {
-    name:"Jai",
-    status:"Coder",
-    text:"loading",
-    text1:"loading1"
+
+  state={
+    pmname:"",
+    pfname:"",
+    result:'Loading'
   }
-  handleOnClick = (name) =>
+
+  calculate()
   {
-    this.setState({
-      name:name,
-      status:"Student"
-    });
-  }
-  componentDidMount()
-  {
-    axios.get('https://jsonplaceholder.typicode.com/users')
-    .then(response =>
-    {
-      console.log(response);
-      this.setState({
-        text1:response.data[1].name
+    axios.get("https://love-calculator.p.rapidapi.com/getPercentage",{
+      "headers":{
+      "content-type":"application/octet-stream",
+      "x-rapidapi-host":"love-calculator.p.rapidapi.com",
+      "x-rapidapi-key":"8075172c1bmsh071df08f86c93b7p187897jsn7013fee148c6"
+      },"params":{
+      "fname":`${this.state.pmname}`,
+      "sname":`${this.state.pfname}`
+      }
       })
-    })
+      .then((response)=>{
+        console.log(response)
+        this.setState({
+          result:response.data
+        })
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
   }
   render()
   {
-    console.log(this.state);
-    console.log("from render");
     return (
       <View style={styles.container}>
-        <Text style = {styles.text}>{this.state.name}</Text>
-        <Text>{this.state.status}</Text>
-        <Button title="Click" onPress={this.handleOnClick.bind(this,"Archit")}/>
-        <Text style = {styles.text}>Hello1</Text>
-        <Text style = {styles.text}>Hello2</Text>
-        <Text style = {{fontSize:30}}>{this.state.text}</Text>
-        <Text style = {{fontSize:30}}>{this.state.text1}</Text>
-        <TextInput style= {{fontSize:30,height:40,borderColor:"yellow",borderWidth:2}}
-        placeholder="Type Here" onChangeText = {(input) => this.setState({text:input})}/>
-        <Button title="click me!!" onPress = {() => Alert.alert("Worked")} color ="red"/>
-        <ScrollView>
-          <Image
-           source={{
-             uri:"https://images.pexels.com/photos/4048182/pexels-photo-4048182.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-             ,height:200,width:200}}/>
-          <Image
-           source={{
-             uri:"https://images.pexels.com/photos/4048182/pexels-photo-4048182.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-             ,height:200,width:200}}/>
-          <Image
-           source={{
-             uri:"https://images.pexels.com/photos/4048182/pexels-photo-4048182.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-             ,height:200,width:200}}/>
-        </ScrollView>
+        <Appbar.Header>
+        <Appbar.Content
+          title="Love Percent"
+          style={{alignItems:"center"}}
+        />
+      </Appbar.Header>
+        <TextInput
+        label='Person(male)'
+        value={this.state.pmname}
+        onChangeText={text => this.setState({pmname:text})}
+        />
+        <TextInput
+        label='Person(female)'
+        value={this.state.pfname}
+        onChangeText={text => this.setState({pfname:text})}
+        />
+        <Button icon="heart" mode="contained" style={{margin:10}} onPress={this.calculate.bind(this)}>
+          Calculate
+        </Button>
+        <DisplayLove data={this.state.result}/>
       </View>
     );
   }
@@ -70,19 +70,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    flexDirection:"column",
-    justifyContent:"center",
-    alignItems:"center"
-  },
-  text:
-  {
-    fontSize : 30,
-    height:80,
-    width:100,
-    borderWidth:3,
-    backgroundColor:"yellow",
-    textAlign:"center",
-    borderColor:"red",
-    marginBottom:10
+    flexDirection:"column"
   }
 });
